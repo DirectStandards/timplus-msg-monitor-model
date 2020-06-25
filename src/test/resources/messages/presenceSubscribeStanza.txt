@@ -1,0 +1,4 @@
+<presence from='romeo@example.net'
+                 id='xk3h1v69'
+                 to='juliet@example.com'
+                 type='subscribe'/>

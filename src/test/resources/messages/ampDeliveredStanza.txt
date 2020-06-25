@@ -1,0 +1,10 @@
+  <message from='hamlet.lit'
+           to='bernardo@hamlet.lit/elsinore'
+           id='chatty2'>
+    <amp xmlns='http://jabber.org/protocol/amp'
+         status='notify'
+         from='bernardo@hamlet.lit/elsinore'
+         to='francisco@hamlet.lit'>
+      <rule action='notify' condition='deliver' value='direct'/>
+    </amp>
+  </message>

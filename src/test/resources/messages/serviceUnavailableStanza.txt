@@ -1,0 +1,8 @@
+<message id='error1' 
+        from='juliet@im.example.com/foo'
+               to='romeo@example.net'>
+        <error type='cancel'>
+          <service-unavailable
+              xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+        </error>
+</message>
