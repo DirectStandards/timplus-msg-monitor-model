@@ -30,6 +30,11 @@ public enum TxDetailType
 	ORIGINAL_RECIPIENT("ORIGINAL_RECIPIENT"),
 	
 	/**
+	 * Group chat room name.  Needed for generating error messages that originated from a group chat.
+	 */
+	GROUP_CHAT_ROOM("GROUP_CHAT_ROOM"),
+	
+	/**
 	 * The message id of a stanza.
 	 */
 	MSG_ID("MSG_ID"),	
@@ -49,7 +54,18 @@ public enum TxDetailType
 	 * The type attribute of a stanza.  The type attribute is defined in section 8.1.4 of RFC 6120, however the value of the attribute
 	 * vary depending on the stanza type.  For example, 'message' stanza types are outlined in section 5.2.2. of RFC 6121.
 	 */
-	TYPE("TYPE");	
+	TYPE("TYPE"),
+	
+	/**
+	 * A chat state indicator.  Chat states are enumerated in section 5.2 of XEP 0085.
+	 */
+	CHAT_STATE("CHAT_STATE"),
+	
+	/**
+	 * Indicates if there is a message body present.  This detail has no value; the presence of this detail in the details list indicates that a message body
+	 * is present in the message.
+	 */
+	MESSAGE_BODY_IND("MESSAGE_BODY_IND");
 	
 	private final String type;
 	

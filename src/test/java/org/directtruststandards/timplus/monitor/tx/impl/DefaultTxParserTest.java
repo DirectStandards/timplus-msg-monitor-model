@@ -1,6 +1,8 @@
 package org.directtruststandards.timplus.monitor.tx.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -31,11 +33,47 @@ public class DefaultTxParserTest
 		final Map<TxDetailType, TxDetail> details = tx.getDetails();
 		
 		assertEquals("sl3nx51f", details.get(TxDetailType.MSG_ID).getDetailValue());
-		assertEquals("juliet@example.com", details.get(TxDetailType.RECIPIENTS).getDetailValue());
-		assertEquals("romeo@example.net", details.get(TxDetailType.FROM).getDetailValue());	
+		assertEquals("juliet@example.com/balcony", details.get(TxDetailType.RECIPIENTS).getDetailValue());
+		assertEquals("romeo@example.net/orchard", details.get(TxDetailType.FROM).getDetailValue());	
 		assertEquals("chat", details.get(TxDetailType.TYPE).getDetailValue());	
+		assertNotNull(details.get(TxDetailType.MESSAGE_BODY_IND));
 	}
 	
+	@Test
+	public void testParseChatStateStanza() throws Exception
+	{
+		final String stanza = IOUtils.resourceToString("/messages/chatStateStanza.txt", Charset.defaultCharset());
+		
+		final Tx tx = parser.parseStanza(stanza);
+		
+		assertEquals(TxStanzaType.MESSAGE_CHAT_STATE, tx.getStanzaType());
+		
+		final Map<TxDetailType, TxDetail> details = tx.getDetails();
+		
+		assertEquals("chat111", details.get(TxDetailType.MSG_ID).getDetailValue());
+		assertEquals("francisco@shakespeare.lit", details.get(TxDetailType.RECIPIENTS).getDetailValue());
+		assertEquals("bernardo@shakespeare.lit/pda", details.get(TxDetailType.FROM).getDetailValue());	
+		assertEquals("chat", details.get(TxDetailType.TYPE).getDetailValue());	
+		assertNull(details.get(TxDetailType.MESSAGE_BODY_IND));
+	}
+
+	@Test
+	public void testParseMixedChatStateAndBodyStanza() throws Exception
+	{
+		final String stanza = IOUtils.resourceToString("/messages/mixedChatStateAndBody.txt", Charset.defaultCharset());
+		
+		final Tx tx = parser.parseStanza(stanza);
+		
+		assertEquals(TxStanzaType.MESSAGE, tx.getStanzaType());
+		
+		final Map<TxDetailType, TxDetail> details = tx.getDetails();
+		
+		assertEquals("chat111", details.get(TxDetailType.MSG_ID).getDetailValue());
+		assertEquals("francisco@shakespeare.lit", details.get(TxDetailType.RECIPIENTS).getDetailValue());
+		assertEquals("bernardo@shakespeare.lit/pda", details.get(TxDetailType.FROM).getDetailValue());	
+		assertEquals("chat", details.get(TxDetailType.TYPE).getDetailValue());	
+		assertNotNull(details.get(TxDetailType.MESSAGE_BODY_IND));
+	}
 	
 	@Test
 	public void testParseAMPDeliveredStanza() throws Exception
@@ -49,7 +87,7 @@ public class DefaultTxParserTest
 		final Map<TxDetailType, TxDetail> details = tx.getDetails();
 		
 		assertEquals("chatty2", details.get(TxDetailType.MSG_ID).getDetailValue());
-		assertEquals("bernardo@hamlet.lit", details.get(TxDetailType.RECIPIENTS).getDetailValue());
+		assertEquals("bernardo@hamlet.lit/elsinore", details.get(TxDetailType.RECIPIENTS).getDetailValue());
 		assertEquals("hamlet.lit", details.get(TxDetailType.FROM).getDetailValue());
 		assertEquals(AMPDeliverCondition.Value.direct.name(), details.get(TxDetailType.AMP_CONDITION_VALUE).getDetailValue());
 		assertEquals("francisco@hamlet.lit", details.get(TxDetailType.ORIGINAL_RECIPIENT).getDetailValue());	
@@ -68,7 +106,7 @@ public class DefaultTxParserTest
 		
 		assertEquals("error1", details.get(TxDetailType.MSG_ID).getDetailValue());
 		assertEquals("romeo@example.net", details.get(TxDetailType.RECIPIENTS).getDetailValue());
-		assertEquals("juliet@im.example.com", details.get(TxDetailType.FROM).getDetailValue());
+		assertEquals("juliet@im.example.com/foo", details.get(TxDetailType.FROM).getDetailValue());
 		assertEquals("service-unavailable", details.get(TxDetailType.ERROR_CONDITION).getDetailValue());
 	}
 	
@@ -85,7 +123,7 @@ public class DefaultTxParserTest
 		
 		assertEquals("ix7s53v2", details.get(TxDetailType.MSG_ID).getDetailValue());
 		assertEquals("romeo@example.net", details.get(TxDetailType.RECIPIENTS).getDetailValue());
-		assertEquals("juliet@example.com", details.get(TxDetailType.FROM).getDetailValue());
+		assertEquals("juliet@example.com/balcony", details.get(TxDetailType.FROM).getDetailValue());
 		assertEquals("set", details.get(TxDetailType.TYPE).getDetailValue());	
 	}
 	

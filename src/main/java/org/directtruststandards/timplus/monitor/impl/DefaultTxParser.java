@@ -23,6 +23,7 @@ import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.amp.AMPDeliverCondition;
 import org.jivesoftware.smackx.amp.packet.AMPExtension;
 import org.jivesoftware.smackx.amp.packet.AMPExtension.Rule;
+import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -38,9 +39,11 @@ public class DefaultTxParser implements TxParser
 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTxParser.class);
 	
-	private static final String CLIENT_NAMESPACE = "xmlns='jabber:client'";
+	private static final String CLIENT_NAMESPACE = "jabber:client";
 	
-	private static final String SERVER_NAMESPACE = "xmlns='jabber:server'";
+	private static final String SERVER_NAMESPACE = "jabber:server";
+	
+	private static final String CLIENT_NAMESPACE_INSERT = "xmlns='jabber:client'";
 	
 	public DefaultTxParser()
 	{
@@ -110,6 +113,11 @@ public class DefaultTxParser implements TxParser
 			// An AMP detail indicates a message AMP
 			else if (details.get(TxDetailType.AMP_CONDITION_VALUE) != null)
 				retVal.setStanzaType(TxStanzaType.AMP);
+			
+			// A chat state and no message body indicates this
+			// as a chat state only message
+			else if (details.get(TxDetailType.CHAT_STATE) != null && details.get(TxDetailType.MESSAGE_BODY_IND) == null)
+				retVal.setStanzaType(TxStanzaType.MESSAGE_CHAT_STATE);
 			
 			// Otherwise the is a normal message
 			else
@@ -198,12 +206,12 @@ public class DefaultTxParser implements TxParser
 		// get the source
 		final Jid from = stanza.getFrom();
 		if (from != null)
-			retVal.put(TxDetailType.FROM, new TxDetail(TxDetailType.FROM, from.asBareJid().toString()));
+			retVal.put(TxDetailType.FROM, new TxDetail(TxDetailType.FROM, from.toString()));
 		
 		// get the destination
 		final Jid to = stanza.getTo();
 		if (to != null)
-			retVal.put(TxDetailType.RECIPIENTS, new TxDetail(TxDetailType.RECIPIENTS, to.asBareJid().toString()));
+			retVal.put(TxDetailType.RECIPIENTS, new TxDetail(TxDetailType.RECIPIENTS, to.toString()));
 		
 		
 		// get the error if any
@@ -220,6 +228,18 @@ public class DefaultTxParser implements TxParser
 			if (type != null)
 				retVal.put(TxDetailType.TYPE, new TxDetail(TxDetailType.TYPE, type.name()));
 			
+			// check if a message body is present
+			if (!StringUtils.isEmpty(msg.getBody()))
+				retVal.put(TxDetailType.MESSAGE_BODY_IND, new TxDetail(TxDetailType.MESSAGE_BODY_IND, ""));
+				
+			// check for a chat state
+			final ExtensionElement chatStateElement = msg.getExtension(ChatStateExtension.NAMESPACE);
+			if (chatStateElement != null && chatStateElement instanceof ChatStateExtension)
+			{
+				final ChatStateExtension chatStateExtension = ChatStateExtension.class.cast(chatStateElement);
+				retVal.put(TxDetailType.CHAT_STATE, new TxDetail(TxDetailType.CHAT_STATE, chatStateExtension.getChatState().name()));
+			}
+			
 			// check if this is an AMP message
 			final ExtensionElement xmpExtension = msg.getExtension(AMPExtension.NAMESPACE);
 			if (xmpExtension != null)
@@ -235,7 +255,7 @@ public class DefaultTxParser implements TxParser
 						try
 						{
 							final Jid orginalRecipJid = JidCreate.from(ampExtension.getTo());
-							retVal.put(TxDetailType.ORIGINAL_RECIPIENT, new TxDetail(TxDetailType.ORIGINAL_RECIPIENT, orginalRecipJid.asBareJid().toString()));
+							retVal.put(TxDetailType.ORIGINAL_RECIPIENT, new TxDetail(TxDetailType.ORIGINAL_RECIPIENT, orginalRecipJid.toString()));
 						} 
 						catch (XmppStringprepException e)
 						{
@@ -321,7 +341,7 @@ public class DefaultTxParser implements TxParser
 			final String start = trimmedStanza.substring(0, trimmedStanza.indexOf(' '));
 			final String end = trimmedStanza.substring(trimmedStanza.indexOf(' '));
 			
-			return new StringBuilder(start).append(' ').append(CLIENT_NAMESPACE).append(' ').append(end).toString(); 
+			return new StringBuilder(start).append(' ').append(CLIENT_NAMESPACE_INSERT).append(' ').append(end).toString(); 
 		}
 		else
 			return trimmedStanza;

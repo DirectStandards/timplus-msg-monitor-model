@@ -19,6 +19,12 @@ public enum TxStanzaType
 	MESSAGE,
 	
 	/**
+	 * A special subtype of message that used to indicate chat state information only.  Chat state
+	 * only messages will not contain a message body or any other extensions.
+	 */
+	MESSAGE_CHAT_STATE,
+	
+	/**
 	 * XMPP Presense stanza
 	 */
 	PRESENSE,
