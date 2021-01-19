@@ -1,8 +1,9 @@
 package org.directtruststandards.timplus.monitor.tx.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -15,7 +16,7 @@ import org.directtruststandards.timplus.monitor.tx.model.TxDetail;
 import org.directtruststandards.timplus.monitor.tx.model.TxDetailType;
 import org.directtruststandards.timplus.monitor.tx.model.TxStanzaType;
 import org.jivesoftware.smackx.amp.AMPDeliverCondition;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultTxParserTest
 {
