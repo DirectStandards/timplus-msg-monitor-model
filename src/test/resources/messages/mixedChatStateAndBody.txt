@@ -1,0 +1,8 @@
+<message
+    id='chat111'
+    from='bernardo@shakespeare.lit/pda'
+    to='francisco@shakespeare.lit'
+    type='chat'>
+  <body>Not just a chat state.</body>
+  <active xmlns='http://jabber.org/protocol/chatstates'/>
+</message>
